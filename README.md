@@ -47,17 +47,17 @@ OSPF area 0 runs across the L3 switch and firewall, distributing routes for all 
 
 ## Key Design Decisions
 
-### 1. Double NAT — working around ISP modem limitations
+### 1. Double NAT - working around ISP modem limitations
 
 The ISP-provided Huawei OptiXstar modem cannot be fully bridged to pass a public IP directly to the lab's edge device, so it performs its own NAT. To avoid breaking the firewall's own NAT/security policies (and to keep the lab's addressing scheme independent of ISP-assigned addressing), the Juniper SSG-5 performs a second layer of NAT on its Untrust interface. This double-NAT design was a deliberate trade-off: it sacrifices a small amount of routing "cleanliness" in exchange for keeping the internal lab addressing stable and portable, regardless of what the ISP hands out upstream.
 
-### 2. OSPF and the management VLAN — a troubleshooting story
+### 2. OSPF and the management VLAN - a troubleshooting story
 
 Initial design excluded the Gestión (management) VLAN from OSPF advertisements to the firewall, on the assumption that management traffic didn't need to be routed externally. This broke firewall-based management access from *every* VLAN — because the firewall never learned a return route to the management subnet, it silently dropped the reply traffic.
 
 **Fix:** Gestión was added into OSPF like every other VLAN, and a dedicated `ACL_FIREWALL_MGMT_OUT` was applied to the other VLAN SVIs to restrict which subnets can actually reach the firewall's management plane. This preserved full routability while enforcing the original security intent through ACLs instead of route exclusion — the correct layer for that kind of control.
 
-### 3. Splunk alert scripting — a real integration bug
+### 3. Splunk alert scripting - a real integration bug
 
 Automated alerts from Splunk trigger a script that pulls data via `curl` and forwards it to ServiceNow. In testing, the script silently failed. Root cause: Splunk injects its own SSL certificate path into the script's environment at runtime, which overrides the system's default CA bundle and breaks `curl`'s certificate validation against ServiceNow's API.
 
