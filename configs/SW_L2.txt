@@ -1,0 +1,266 @@
+SW_L2#show config
+Using 6267 out of 32768 bytes
+!
+version 12.1
+no service pad
+service timestamps debug uptime
+service timestamps log uptime
+service password-encryption
+!
+hostname SW_L2
+!
+enable secret 5 <Sanitized>
+!
+username admin privilege 15 secret 5 <Sanitized>
+ip subnet-zero
+!
+no ip domain-lookup
+ip domain-name lab.com
+!
+spanning-tree mode pvst
+no spanning-tree optimize bpdu transmission
+spanning-tree extend system-id
+!
+!
+!
+!
+interface Port-channel1
+ description TRUNK_LACP_hacia_SW_L3
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,99
+ switchport mode trunk
+ flowcontrol send off
+!
+interface FastEthernet0/1
+ description Enlace_LACP_1_hacia_SW_L3_Fa1-0-1
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,99
+ switchport mode trunk
+ channel-group 1 mode active
+ spanning-tree portfast
+!
+interface FastEthernet0/2
+ description Enlace_LACP_2_hacia_SW_L3_Fa1-0-2
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,99
+ switchport mode trunk
+ channel-group 1 mode active
+ spanning-tree portfast
+!
+interface FastEthernet0/3
+ description Acceso_VLAN10_Administracion
+ switchport access vlan 10
+ switchport mode access
+ switchport port-security
+ switchport port-security maximum 2
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/4
+ description Acceso_VLAN10_Administracion
+ switchport access vlan 10
+ switchport mode access
+ switchport port-security
+ switchport port-security maximum 2
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/5
+ description Acceso_VLAN10_Administracion
+ switchport access vlan 10
+ switchport mode access
+ switchport port-security
+ switchport port-security maximum 2
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/6
+ description Acceso_VLAN10_Administracion
+ switchport access vlan 10
+ switchport mode access
+ switchport port-security
+ switchport port-security maximum 2
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/7
+ description Acceso_VLAN10_Administracion
+ switchport access vlan 10
+ switchport mode access
+ switchport port-security
+ switchport port-security maximum 2
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/8
+ description Acceso_VLAN20_Soporte
+ switchport access vlan 20
+ switchport mode access
+ switchport port-security
+ switchport port-security maximum 2
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/9
+ description Acceso_VLAN20_Soporte
+ switchport access vlan 20
+ switchport mode access
+ switchport port-security
+ switchport port-security maximum 2
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/10
+ description Acceso_VLAN20_Soporte
+ switchport access vlan 20
+ switchport mode access
+ switchport port-security
+ switchport port-security maximum 2
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/11
+ description Acceso_VLAN20_Soporte
+ switchport access vlan 20
+ switchport mode access
+ switchport port-security
+ switchport port-security maximum 2
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/12
+ description Acceso_VLAN20_Soporte
+ switchport access vlan 20
+ switchport mode access
+ switchport port-security
+ switchport port-security maximum 2
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/13
+ description Acceso_VLAN30_Invitados
+ switchport access vlan 30
+ switchport mode access
+ switchport port-security
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/14
+ description Acceso_VLAN30_Invitados
+ switchport access vlan 30
+ switchport mode access
+ switchport port-security
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/15
+ description Acceso_VLAN30_Invitados
+ switchport access vlan 30
+ switchport mode access
+ switchport port-security
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/16
+ description Acceso_VLAN30_Invitados
+ switchport access vlan 30
+ switchport mode access
+ switchport port-security
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/17
+ description Acceso_VLAN30_Invitados
+ switchport access vlan 30
+ switchport mode access
+ switchport port-security
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/18
+ description Acceso_VLAN40_Servidores
+ switchport access vlan 40
+ switchport mode access
+ switchport port-security
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/19
+ description Acceso_VLAN40_Servidores
+ switchport access vlan 40
+ switchport mode access
+ switchport port-security
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/20
+ description Acceso_VLAN40_Servidores
+ switchport access vlan 40
+ switchport mode access
+ switchport port-security
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/21
+ description Acceso_VLAN99_Gestion
+ switchport access vlan 99
+ switchport mode access
+ switchport port-security
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/22
+ description PUERTO_NO_USADO_Cuarentena
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet0/23
+ description PUERTO_NO_USADO_Cuarentena
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet0/24
+ description PUERTO_NO_USADO_Cuarentena
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface Vlan1
+ no ip address
+ no ip route-cache
+ shutdown
+!
+interface Vlan99
+ description GESTION
+ ip address 172.16.10.74 255.255.255.248
+ no ip route-cache
+!
+ip default-gateway 172.16.10.73
+no ip http server
+banner motd ^C
+ACCESO RESTRINGIDO - Servicios Digitales CR S.A.
+Este equipo es propiedad de la organizacion.
+El acceso no autorizado esta prohibido y sera reportado.
+^C
+!
+line con 0
+ logging synchronous
+ login local
+line vty 0 4
+ logging synchronous
+ login local
+ transport input telnet
+line vty 5 15
+ logging synchronous
+ login local
+ transport input telnet
+!
+!
+end
+
+SW_L2#

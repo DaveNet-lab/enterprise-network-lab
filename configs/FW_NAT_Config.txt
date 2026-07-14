@@ -1,0 +1,124 @@
+ACCESO RESTRINGIDO - Servicios Digitales CR S.A. - Uso no autorizado prohibido
+FW_NAT-> get config
+Total Config size 4076:
+set clock timezone 0
+set vrouter trust-vr sharable
+set vrouter "untrust-vr"
+exit
+set vrouter "trust-vr"
+unset auto-route-export
+set protocol ospf
+set enable
+exit
+exit
+set auth-server "Local" id 0
+set auth-server "Local" server-name "Local"
+set auth default auth server "Local"
+set auth radius accounting port 1646
+set admin name "admin"
+set admin password "<Sanitized>"
+set admin auth timeout 10
+set admin auth server "Local"
+set admin auth banner telnet login "ACCESO RESTRINGIDO - Servicios Digitales CR S.A. - Uso no autorizado prohibido"
+set admin auth banner console login "ACCESO RESTRINGIDO - Servicios Digitales CR S.A. - Uso no autorizado prohibido"
+set admin format dos
+set zone "Trust" vrouter "trust-vr"
+set zone "Untrust" vrouter "trust-vr"
+set zone "DMZ" vrouter "trust-vr"
+set zone "VLAN" vrouter "trust-vr"
+set zone "Untrust-Tun" vrouter "trust-vr"
+set zone "Trust" tcp-rst
+set zone "Untrust" block
+unset zone "Untrust" tcp-rst
+set zone "DMZ" tcp-rst
+set zone "VLAN" block
+unset zone "VLAN" tcp-rst
+set zone "Untrust" screen tear-drop
+set zone "Untrust" screen syn-flood
+set zone "Untrust" screen ping-death
+set zone "Untrust" screen ip-filter-src
+set zone "Untrust" screen land
+set zone "V1-Untrust" screen tear-drop
+set zone "V1-Untrust" screen syn-flood
+set zone "V1-Untrust" screen ping-death
+set zone "V1-Untrust" screen ip-filter-src
+set zone "V1-Untrust" screen land
+set interface "ethernet0/0" zone "Untrust"
+set interface "ethernet0/1" zone "Trust"
+set interface "bgroup0" zone "Trust"
+set interface bgroup0 port ethernet0/2
+set interface bgroup0 port ethernet0/3
+set interface bgroup0 port ethernet0/4
+set interface bgroup0 port ethernet0/5
+set interface bgroup0 port ethernet0/6
+unset interface vlan1 ip
+set interface ethernet0/0 ip 192.168.100.2/24
+set interface ethernet0/0 nat
+set interface ethernet0/1 ip 10.0.0.1/30
+set interface ethernet0/1 nat
+set interface bgroup0 ip 192.168.50.1/24
+set interface bgroup0 nat
+unset interface vlan1 bypass-others-ipsec
+unset interface vlan1 bypass-non-ip
+set interface ethernet0/0 ip manageable
+set interface ethernet0/1 ip manageable
+set interface bgroup0 ip manageable
+unset interface ethernet0/1 manage telnet
+unset interface ethernet0/1 manage snmp
+set interface "serial0/0" modem settings "USR" init "AT&F"
+set interface "serial0/0" modem settings "USR" active
+set interface "serial0/0" modem speed 115200
+set interface "serial0/0" modem retry 3
+set interface "serial0/0" modem interval 10
+set interface "serial0/0" modem idle-time 10
+set flow tcp-mss
+unset flow no-tcp-seq-check
+set flow tcp-syn-check
+unset flow tcp-syn-bit-check
+set flow reverse-route clear-text prefer
+set flow reverse-route tunnel always
+set hostname FW_NAT
+set pki authority default scep mode "auto"
+set pki x509 default cert-path partial
+set address "Trust" "GESTION" 172.16.99.0 255.255.255.240
+set ike respond-bad-spi 1
+unset ike ikeid-enumeration
+unset ike dos-protection
+unset ipsec access-session enable
+set ipsec access-session maximum 5000
+set ipsec access-session upper-threshold 0
+set ipsec access-session lower-threshold 0
+set ipsec access-session dead-p2-sa-timeout 0
+unset ipsec access-session log-error
+unset ipsec access-session info-exch-connected
+unset ipsec access-session use-error-log
+set vrouter "untrust-vr"
+exit
+set vrouter "trust-vr"
+exit
+set url protocol websense
+exit
+set policy id 1 from "Trust" to "Untrust"  "Any" "Any" "ANY" permit
+set policy id 1
+exit
+set nsmgmt bulkcli reboot-timeout 60
+set ssh version v2
+set ssh enable
+set config lock timeout 5
+unset license-key auto-update
+set snmp port listen 161
+set snmp port trap 162
+set vrouter "untrust-vr"
+exit
+set vrouter "trust-vr"
+set router-id 2.2.2.2
+unset add-default-route
+set route 0.0.0.0/0 interface ethernet0/0 gateway 192.168.100.1
+exit
+set interface ethernet0/1 protocol ospf area 0.0.0.0
+set interface ethernet0/1 protocol ospf enable
+set vrouter "untrust-vr"
+exit
+set vrouter "trust-vr"
+exit
+FW_NAT->

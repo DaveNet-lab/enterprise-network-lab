@@ -1,0 +1,383 @@
+SW_L3_Router#show run
+Building configuration...
+
+Current configuration : 9468 bytes
+!
+version 12.2
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname SW_L3_Router
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 <sanitized>
+!
+username admin privilege 15 secret 5 <sanitized>
+!
+!
+no aaa new-model
+switch 1 provision ws-c3750-24ts
+system mtu routing 1500
+ip routing
+no ip domain-lookup
+ip domain-name lab.com
+ip dhcp excluded-address 172.16.10.1 172.16.10.4
+ip dhcp excluded-address 172.16.10.17 172.16.10.20
+ip dhcp excluded-address 172.16.10.33 172.16.10.36
+ip dhcp excluded-address 172.16.10.65 172.16.10.66
+!
+ip dhcp pool VLAN40_SERVIDORES
+   network 172.16.10.64 255.255.255.248
+   default-router 172.16.10.65
+   dns-server 8.8.8.8 8.8.4.4
+   lease 7
+!
+ip dhcp pool VLAN30_INVITADOS
+   network 172.16.10.32 255.255.255.224
+   default-router 172.16.10.33
+   dns-server 8.8.8.8 8.8.4.4
+   lease 0 8
+!
+ip dhcp pool VLAN20_SOPORTE
+   network 172.16.10.16 255.255.255.240
+   default-router 172.16.10.17
+   dns-server 172.16.10.66 8.8.8.8
+   domain-name empresa.local
+   lease 7
+!
+ip dhcp pool VLAN10_ADMINISTRACION
+   network 172.16.10.0 255.255.255.240
+   default-router 172.16.10.1
+   dns-server 172.16.10.66 8.8.8.8
+   domain-name empresa.local
+   lease 7
+!
+!
+ipv6 unicast-routing
+!
+!
+crypto pki trustpoint TP-self-signed-2422741888
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2422741888
+ revocation-check none
+ rsakeypair TP-self-signed-2422741888
+!
+!
+crypto pki certificate chain TP-self-signed-2422741888
+ certificate self-signed 01
+  3082024C 308201B5 A0030201 02020101 300D0609 2A864886 F70D0101 04050030
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274
+  69666963 6174652D 32343232 37343138 3838301E 170D3933 30333031 30303031
+  33325A17 0D323030 31303130 30303030 305A3031 312F302D 06035504 03132649
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D32 34323237
+  34313838 3830819F 300D0609 2A864886 F70D0101 01050003 818D0030 81890281
+  8100A507 9013C742 435717B9 AFFCBDD8 490BE662 45CD1F65 33CEE911 1CA76EAE
+  DAAA6BA0 7D785033 339736F3 1345DEA2 2ADE3B3E 003FBF95 C55DC68C 65A28D64
+  BC90DF51 DA070CDF 2193D61A 7D825AAD DF19B7D1 61C164E6 96560A6E 689661E6
+  E31B85C5 D7E6432B 8B459E7B 0F167B60 985C2362 42078BA8 C11B1E6C 3F9EC62D
+  38290203 010001A3 74307230 0F060355 1D130101 FF040530 030101FF 301F0603
+  551D1104 18301682 1453575F 4C335F52 6F757465 722E6C61 622E636F 6D301F06
+  03551D23 04183016 801428DE 11038FDD 65F0EDC2 82F852A1 05C3001A A395301D
+  0603551D 0E041604 1428DE11 038FDD65 F0EDC282 F852A105 C3001AA3 95300D06
+  092A8648 86F70D01 01040500 03818100 588F0B9D 9CDDAD69 E7331A86 E89B6FA7
+  5AFF1460 14A0407D ED1F535A 24090A03 F578D620 A1131C49 22DE615A B77752E0
+  5081725A F7438189 A6135306 D4A5C02F 8BEAA158 0857A8B0 3C4804D4 61D1BA87
+  2402211E 9163A901 6420F70C 2D661EF2 5BF0B2F2 FFF33A75 EF25468A BBA60822
+  F40E72A2 41B3A823 8D0BB8C1 E5F55B85
+  quit
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+ip ssh version 2
+!
+!
+!
+interface Loopback0
+ ip address 192.168.1.1 255.255.255.0
+!
+interface Loopback1
+ ip address 192.168.2.1 255.255.255.0
+!
+interface Port-channel1
+ description TRUNK_LACP_hacia_SW_L2
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,99
+ switchport mode trunk
+!
+interface FastEthernet1/0/1
+ description Enlace_LACP_1_hacia_SW_L2_Fa0-1
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,99
+ switchport mode trunk
+ channel-group 1 mode active
+ spanning-tree portfast
+!
+interface FastEthernet1/0/2
+ description Enlace_LACP_2_hacia_SW_L2_Fa0-2
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,99
+ switchport mode trunk
+ channel-group 1 mode active
+ spanning-tree portfast
+!
+interface FastEthernet1/0/3
+ description conexion_SSG5
+ no switchport
+ ip address 10.0.0.2 255.255.255.252
+ spanning-tree portfast
+!
+interface FastEthernet1/0/4
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/5
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/6
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/7
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/8
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/9
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/10
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/11
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/12
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/13
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/14
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/15
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/16
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/17
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/18
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/19
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/20
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/21
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/22
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/23
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface FastEthernet1/0/24
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+!
+interface GigabitEthernet1/0/1
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/2
+ switchport access vlan 666
+ switchport mode access
+ shutdown
+!
+interface Vlan1
+ no ip address
+!
+interface Vlan10
+ description ADMINISTRACION
+ ip address 172.16.10.1 255.255.255.240
+ ip access-group ACL_FIREWALL_MGMT in
+ ipv6 address 2001:DB8:204:10::1/64
+ ipv6 enable
+!
+interface Vlan20
+ description SOPORTE
+ ip address 172.16.10.17 255.255.255.240
+ ip access-group ACL_FIREWALL_MGMT in
+ ipv6 address 2001:DB8:204:20::1/64
+ ipv6 enable
+!
+interface Vlan30
+ description INVITADOS
+ ip address 172.16.10.33 255.255.255.224
+ ip access-group ACL_FIREWALL_MGMT in
+ ipv6 address 2001:DB8:204:30::1/64
+ ipv6 enable
+ ipv6 traffic-filter ACL_INVITADOS_OUT_V6 in
+!
+interface Vlan40
+ description SERVIDORES
+ ip address 172.16.10.65 255.255.255.248
+ ip access-group ACL_FIREWALL_MGMT in
+ ipv6 address 2001:DB8:204:40::1/64
+ ipv6 enable
+!
+interface Vlan99
+ description GESTION
+ ip address 172.16.10.73 255.255.255.248
+ ipv6 address 2001:DB8:204:99::1/64
+ ipv6 enable
+!
+router ospf 1
+ router-id 1.1.1.1
+ log-adjacency-changes
+ network 10.0.0.0 0.0.0.3 area 0
+ network 172.16.10.0 0.0.0.15 area 0
+ network 172.16.10.16 0.0.0.15 area 0
+ network 172.16.10.32 0.0.0.31 area 0
+ network 172.16.10.64 0.0.0.7 area 0
+ network 172.16.10.72 0.0.0.7 area 0
+ network 192.168.1.0 0.0.0.255 area 0
+ network 192.168.2.0 0.0.0.255 area 0
+!
+ip classless
+ip route 0.0.0.0 0.0.0.0 10.0.0.1
+no ip http server
+no ip http secure-server
+!
+!
+ip access-list standard ACL_GESTION_VTY
+ permit 172.16.10.72 0.0.0.7
+ deny   any log
+!
+ip access-list extended ACL_FIREWALL_MGMT
+ permit ip 172.16.10.72 0.0.0.7 10.0.0.0 0.0.0.3
+ deny   ip any 10.0.0.0 0.0.0.3 log
+ permit ip any any
+ip access-list extended ACL_INVITADOS_OUT
+ deny   ip 172.16.10.32 0.0.0.31 172.16.10.0 0.0.0.15 log
+ deny   ip 172.16.10.32 0.0.0.31 172.16.10.16 0.0.0.15 log
+ deny   ip 172.16.10.32 0.0.0.31 172.16.10.64 0.0.0.7 log
+ deny   ip 172.16.10.32 0.0.0.31 172.16.10.72 0.0.0.7 log
+ deny   ip 172.16.10.32 0.0.0.31 10.0.0.0 0.0.0.3 log
+ permit ip any any log
+!
+logging source-interface Loopback0
+logging 172.16.10.67
+!
+!
+!
+ipv6 access-list ACL_INVITADOS_OUT_V6
+ deny ipv6 2001:DB8:204:30::/64 2001:DB8:204:10::/64 log
+ deny ipv6 2001:DB8:204:30::/64 2001:DB8:204:20::/64 log
+ deny ipv6 2001:DB8:204:30::/64 2001:DB8:204:40::/64 log
+ deny ipv6 2001:DB8:204:30::/64 2001:DB8:204:99::/64 log
+ permit ipv6 any any
+!
+banner motd ^C
+ACCESO RESTRINGIDO - Servicios Digitales CR S.A.
+Este equipo es propiedad de la organizacion.
+El acceso no autorizado esta prohibido y sera reportado.
+^C
+!
+line con 0
+ logging synchronous
+ login local
+line vty 0 4
+ access-class ACL_GESTION_VTY in
+ logging synchronous
+ login local
+ transport input ssh
+line vty 5 15
+ access-class ACL_GESTION_VTY in
+ logging synchronous
+ login local
+ transport input ssh
+!
+end
+
+SW_L3_Router#
